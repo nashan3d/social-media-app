@@ -16,8 +16,7 @@ export async function getStaticProps({ params }) {
 
 
   export default function FavouritePost({postData}) {
-    console.log(postData.data.posts)
-   
+        
     return (
       <>
          <Head>

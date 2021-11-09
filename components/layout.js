@@ -7,7 +7,7 @@ import Link from 'next/link'
 import {updatePost} from '../lib/update-post'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart} from "@fortawesome/free-solid-svg-icons";
-import Router from 'next/router'
+import {useRouter} from 'next/router'
 
 
 
@@ -52,7 +52,7 @@ box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
 display:flex;
 margin-left: 10px;
 margin-bottom: 10px;
-justify-content:center;  
+justify-content:flex-start;  
 align-items: center; 
 padding:5px;
 @media (max-width: 425px) {
@@ -77,16 +77,16 @@ const Footer = styled.div`
 `
 
 
-export default function Layout(props,posts) { 
-  console.log('posts',props);
-    const makeFav = async (id,favourite) =>{
-        console.log('favourite',posts);
-        const updated = updatePost(id,favourite);
-               
-        Router.reload('/');
-        
-    }
-    const postData = props;
+export default function Layout(postData) { 
+    const router = useRouter();
+
+    const isChild = (router.asPath === '/favourites');   
+    
+    const makeFav = async (id,favourite) =>{        
+        const updated = updatePost(id,favourite);               
+        router.reload('/');        
+    }    
+  
    return (
     <div className={styles.container}>
       <Head>
@@ -143,21 +143,25 @@ export default function Layout(props,posts) {
                         <p style={{opacity:0.8}}>{imageName}</p>
                         <p><strong>AED {price}</strong></p>
                     </div>
-
-                    <div style={{float:'right',width:'40px',position:'relative',marginTop:'-80px',marginRight: '40px'}}>
+                   {!isChild ? (
+                      <div style={{float:'right',width:'40px',position:'relative',marginTop:'-80px',marginRight: '40px'}}>
                         <FontAwesomeIcon onClick={() => makeFav(id,isFavourite)} color={isFavourite ===1 ? '#FC619C' : '#18C7D4'} border fixedWidth icon={faHeart}></FontAwesomeIcon>
-                    </div>
+                      </div>
+                   ) : (
+                     <span></span>
+                   )}
+                    
                     
                 </Card>                
 
-                {posts  ? (
+                {!isChild  ? (
                     <div>                   
 
                     <div style={{ marginTop: '10px', paddingLeft: '5px', marginBottom: '10px' }}>                        
                         <FontAwesomeIcon color={'blue'} width={20} border fixedWidth icon={faHeart}></FontAwesomeIcon>
                         <span style={{ color:'blue',paddingTop: '0px', paddingLeft: '9px', position: 'absolute', fontWeight: '700' }}>{postLikes} Likes</span>
                     </div>
-                    <div style={{ color: 'gray', fontWeight: '700', marginLeft: '5px', marginBottom: '10px' }}>{postDescription}</div>
+                    <div style={{ color: 'gray', fontWeight: '300', marginLeft: '5px', marginBottom: '10px' }}>{postDescription}</div>
                     <div style={{ color: 'blue', fontWeight: '300', marginLeft: '5px', marginBottom: '10px' }}>#iphone #cases #mobilephones</div>
                     <div style={{color: 'gray', marginLeft: '5px', marginBottom: '10px' }}>View {postComments} comments</div>
                     
